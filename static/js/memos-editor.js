@@ -150,7 +150,7 @@ function getEditIcon() {
         cocoMessage.error('出错了，再检查一下吧!')
       }
     })
-    .catch(err => {cocoMessage.error(err)});
+    .catch(err => {cocoMessage.error('网络错误')});
   }
 }
 
