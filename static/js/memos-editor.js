@@ -30,7 +30,7 @@ function getEditIcon() {
   var memosContent = '',memosVisibility = '',memosResource = [];
   var memosPath = window.localStorage && window.localStorage.getItem("memos-access-path");
   var memosOpenId = window.localStorage && window.localStorage.getItem("memos-access-token");
-  var getEditor = window.localStorage && window.localStorage.getItem("nuoea-memos-editor");
+  var getEditor = window.localStorage && window.localStorage.getItem("memos-editor-display");
   var isHide = getEditor === "hide";
   memosTextarea.addEventListener('input', (e) => {
     memosTextarea.style.height = 'inherit';
@@ -45,8 +45,8 @@ function getEditIcon() {
   loadEditorBtn.addEventListener("click", function () {
     getEditor != "show" ? hasMemosOpenId() : ''
     document.querySelector(".memos-editor").classList.toggle("d-none"); 
-    window.localStorage && window.localStorage.setItem("nuoea-memos-editor", document.querySelector(".memos-editor").classList.contains("d-none") ? "hide" : "show");
-    getEditor = window.localStorage && window.localStorage.getItem("nuoea-memos-editor");
+    window.localStorage && window.localStorage.setItem("memos-editor-display", document.querySelector(".memos-editor").classList.contains("d-none") ? "hide" : "show");
+    getEditor = window.localStorage && window.localStorage.getItem("memos-editor-display");
   });
 
   taglistBtn.addEventListener("click", function () {
