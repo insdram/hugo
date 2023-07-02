@@ -1,12 +1,13 @@
 var memosDom = document.querySelector(memosData.dom);
 var editIcon = '<button class="load-memos-editor outline p-1"><i class="iconfont iconedit-square"></i></button>';
-var editorCont = '<div class="memos-editor animate__animated animate__fadeIn d-none col-12"><div class="memos-editor-body mb-3 p-3"><div class="memos-editor-inner animate__animated animate__fadeIn"><div class="memos-editor-content"><textarea class="memos-editor-inputer text-sm" rows="1" placeholder="任何想法..."></textarea></div><div class="memos-editor-tools pt-3"><div class="d-flex"><div class="button outline action-btn tag-btn mr-2"><i class="iconfont iconnumber"></i></div><div class="button outline action-btn todo-btn mr-2"><i class="iconfont iconunorderedlist"></i></div><div class="button outline action-btn code-btn mr-2"><i class="iconfont iconcode"></i></div><div class="button outline action-btn link-btn"><i class="iconfont iconlink"></i></div></div><div class="d-flex flex-fill"><div class="memos-tag-list d-none mt-2 animate__animated animate__fadeIn"></div></div></div><div class="memos-editor-footer border-t pt-3 mt-3"><div class="editor-selector mr-2"><select class="select-memos-value outline px-2 py-1"><option value="PUBLIC">所有人可见</option><option value="PROTECTED">登录用户可见</option><option value="PRIVATE">仅自己可见</option></select></div><div class="editor-submit d-flex flex-fill justify-content-end"><button class="primary submit-memos-btn px-3 py-1">记下</button></div></div></div><div class="memos-editor-option animate__animated animate__fadeIn"><input name="memos-api-url" class="memos-open-api-input input-text flex-fill mr-3 px-2 py-1" type="text" value="" maxlength="120" placeholder="OpenAPI"><div class="memos-open-api-submit"><button class="primary submit-openapi-btn px-3 py-1">保存</button></div></div></div></div>';
-
 document.body.insertAdjacentHTML('afterend', editIcon);
+
+var editorCont = '<div class="memos-editor animate__animated animate__fadeIn d-none col-12"><div class="memos-editor-body mb-3 p-3"><div class="memos-editor-inner animate__animated animate__fadeIn"><div class="memos-editor-content"><textarea class="memos-editor-inputer text-sm" rows="1" placeholder="任何想法..."></textarea></div><div class="memos-editor-tools pt-3"><div class="d-flex"><div class="button outline action-btn tag-btn mr-2"><i class="iconfont iconnumber"></i></div><div class="button outline action-btn todo-btn mr-2"><i class="iconfont iconunorderedlist"></i></div><div class="button outline action-btn code-btn mr-2"><i class="iconfont iconcode"></i></div><div class="button outline action-btn mr-2 link-btn"><i class="iconfont iconlink"></i></div><div class="button outline action-btn image-btn" onclick="this.lastElementChild.click()"><i class="iconfont iconimage"></i><input class="memos-upload-image-input d-none" type="file" accept="image/*"></div></div><div class="d-flex flex-fill"><div class="memos-tag-list d-none mt-2 animate__animated animate__fadeIn"></div></div></div><div class="memos-editor-footer border-t pt-3 mt-3"><div class="editor-selector mr-2"><select class="select-memos-value outline px-2 py-1"><option value="PUBLIC">所有人可见</option><option value="PROTECTED">仅登录可见</option><option value="PRIVATE">仅自己可见</option></select></div><div class="editor-submit d-flex flex-fill justify-content-end"><button class="primary submit-memos-btn px-3 py-1">记下</button></div></div></div><div class="memos-editor-option animate__animated animate__fadeIn"><input name="memos-api-url" class="memos-open-api-input input-text flex-fill mr-3 px-2 py-1" type="text" value="" maxlength="120" placeholder="OpenAPI"><div class="memos-open-api-submit"><button class="primary submit-openapi-btn px-3 py-1">保存</button></div></div></div></div>';
 memosDom.insertAdjacentHTML('afterbegin',editorCont);
 
 var memosEditorInner = document.querySelector(".memos-editor-inner"); 
 var memosEditorOption = document.querySelector(".memos-editor-option");
+
 
 var taglistBtn = document.querySelector(".tag-btn");
 var todoBtn = document.querySelector(".todo-btn");
@@ -16,17 +17,17 @@ var linkBtn = document.querySelector(".link-btn");
 var loadEditorBtn = document.querySelector(".load-memos-editor");
 var submitApiBtn = document.querySelector(".submit-openapi-btn");
 var submitMemoBtn = document.querySelector(".submit-memos-btn");
-
 var memosVisibilitySelect = document.querySelector(".select-memos-value");
 var memosTextarea = document.querySelector(".memos-editor-inputer");
 var openApiInput = document.querySelector(".memos-open-api-input");
+var uploadImageInput = document.querySelector(".memos-upload-image-input");
 
 document.addEventListener("DOMContentLoaded", () => {
   getEditIcon();
 });
 
 function getEditIcon() {
-  var memosContent = '',memosVisibility = '';
+  var memosContent = '',memosVisibility = '',memosResource = [];
   var memosPath = window.localStorage && window.localStorage.getItem("memos-access-path");
   var memosOpenId = window.localStorage && window.localStorage.getItem("memos-access-token");
   var getEditor = window.localStorage && window.localStorage.getItem("nuoea-memos-editor");
@@ -77,17 +78,45 @@ function getEditIcon() {
     }
   });
 
+  uploadImageInput.addEventListener('change', () => {
+    let filesData = uploadImageInput.files[0];
+    if (uploadImageInput.files.length !== 0){
+      uploadImage(filesData);
+    }
+  })
+
+  async function uploadImage(data) {
+    const imageData = new FormData();
+    const blobUrl = memosPath+"/api/resource/blob?openId="+memosOpenId;
+    imageData.append('file', data, data.name)
+    const resp = await fetch(blobUrl, {
+      method: "POST",
+      body: imageData
+    })
+    const res = await resp.json().then(res => {
+      if(res.data.id){
+        cocoMessage.success(
+        '上传成功',
+        ()=>{
+          memosResource.push(res.data.id);
+          window.localStorage && window.localStorage.setItem("memos-resource-list",  JSON.stringify(memosResource));
+        })
+      }
+    })
+  }
+
   submitApiBtn.addEventListener("click", function () {
     getMemosData(openApiInput.value)
   });
 
   submitMemoBtn.addEventListener("click", function () {
-    memosContent = memosTextarea.value
-    memosVisibility = memosVisibilitySelect.value
+    memosContent = memosTextarea.value;
+    memosVisibility = memosVisibilitySelect.value;
+    memosResource = window.localStorage && JSON.parse(window.localStorage.getItem("memos-resource-list"));
     let  hasContent = memosContent.length !== 0;
     if (memosOpenId && hasContent) {
       let memoUrl = memosPath+"/api/memo?openId="+memosOpenId;
-      let memoBody = {content:memosContent,visibility:memosVisibility}
+      let memoBody = {content:memosContent,visibility:memosVisibility,resourceIdList:memosResource}
       fetch(memoUrl, {
         method: 'post',
         body: JSON.stringify(memoBody),
