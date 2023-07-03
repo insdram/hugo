@@ -312,7 +312,7 @@ function getEditIcon() {
                 imgLink = data[i].link + '/o/r/' + resourceList[j].id + '/' + fileId
             }
           if (restype == 'image') {
-            imgUrl += '<div class="memo-resource w-100"><img class="lozad" src="'+loadUrl+'" data-src="' + imgLink + '"/></div>'
+            imgUrl += '<div class="memo-resource w-100"><img loading="lazy" src="' + imgLink + '"/></div>'
             resImgLength = resImgLength + 1
           }
           if (restype !== 'image') {
