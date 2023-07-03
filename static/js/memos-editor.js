@@ -219,9 +219,10 @@ function getEditIcon() {
       let apiRes = e.match(apiReg),urlRes = e.match(urlReg)[1];
       memosOpenId = apiRes[1];
       memosPath = urlRes;
+      memosCount = resdata.data.length;
       window.localStorage && window.localStorage.setItem("memos-access-path", urlRes);
       window.localStorage && window.localStorage.setItem("memos-access-token", memosOpenId);
-      window.localStorage && window.localStorage.setItem("memos-response-count", resdata.data.length);
+      window.localStorage && window.localStorage.setItem("memos-response-count", memosCount);
       cocoMessage.success(
       '保存成功',
       ()=>{
