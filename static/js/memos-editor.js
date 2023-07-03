@@ -1,5 +1,5 @@
-var editIcon = '<button class="load-memos-editor outline p-1"><i class="iconfont iconedit-square"></i></button>';
-document.body.insertAdjacentHTML('afterend', editIcon);
+var editIcon = '<button class="load-memos-editor p-1"><i class="iconfont iconedit-square"></i></button>';
+document.body.insertAdjacentHTML('beforeend', editIcon);
 
 var memosDom = document.querySelector(memosData.dom);
 var memosEditorCont = '<div class="memos-editor animate__animated animate__fadeIn d-none col-12"><div class="memos-editor-body mb-3 p-3"><div class="memos-editor-inner animate__animated animate__fadeIn"><div class="memos-editor-content"><textarea class="memos-editor-inputer text-sm" rows="1" placeholder="任何想法..."></textarea></div><div class="memos-editor-tools pt-3"><div class="d-flex"><div class="button outline action-btn tag-btn mr-2"><i class="iconfont iconnumber"></i></div><div class="button outline action-btn todo-btn mr-2"><i class="iconfont iconunorderedlist"></i></div><div class="button outline action-btn code-btn mr-2"><i class="iconfont iconcode"></i></div><div class="button outline action-btn mr-2 link-btn"><i class="iconfont iconlink"></i></div><div class="button outline action-btn image-btn mr-2" onclick="this.lastElementChild.click()"><i class="iconfont iconimage"></i><input class="memos-upload-image-input d-none" type="file" accept="image/*"></div><div class="button outline action-btn random-btn"><i class="iconfont iconretweet"></i></div></div><div class="d-flex flex-fill"><div class="memos-tag-list d-none mt-2 animate__animated animate__fadeIn"></div></div></div><div class="memos-editor-footer border-t pt-3 mt-3"><div class="editor-selector select mr-2"><select class="select-memos-value outline pl-2 pr-4 py-1"><option value="PUBLIC">所有人可见</option><option value="PROTECTED">仅登录可见</option><option value="PRIVATE">仅自己可见</option></select></div><div class="editor-submit d-flex flex-fill justify-content-end"><button class="primary submit-memos-btn px-3 py-1">记下</button></div></div></div><div class="memos-editor-option animate__animated animate__fadeIn"><input name="memos-api-url" class="memos-open-api-input input-text flex-fill mr-3 px-2 py-1" type="text" value="" maxlength="120" placeholder="OpenAPI"><div class="memos-open-api-submit"><button class="primary submit-openapi-btn px-3 py-1">保存</button></div></div></div><div class="memos-random d-none"></div></div>';
@@ -276,18 +276,17 @@ function getEditIcon() {
       let memosRes = data[i].content
         .replace(TAG_REG, "")
         .replace(IMG_REG, "")
-        .replace(LINK_REG, '<a href="$2" target="_blank"><span> $1 </span><i class="iconfont iconlink"></i></a>')
+        .replace(LINK_REG, '<a class="primary" href="$2" target="_blank">$1</a>')
         memosRes = marked.parse(memosRes)
         .replace(BILIBILI_REG, '<div class="video-wrapper"><iframe src="//player.bilibili.com/player.html?bvid=$1&as_wide=1&high_quality=1&danmaku=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe></div>')
         .replace(NETEASE_MUSIC_REG, '<meting-js auto="https://music.163.com/#/song?id=$1"></meting-js>')
         .replace(QQMUSIC_REG, '<meting-js auto="https://y.qq.com/n/yqq/song$1.html"></meting-js>')
       
       //解析 content 内 md 格式图片
-      var loadUrl = memosData.loadUrl;
       var imgArr = data[i].content.match(IMG_REG);
       var imgStr = String(imgArr).replace(/[,]/g, '');
       if (imgArr) {
-          var memosImg = imgStr.replace(IMG_REG, '<div class="memo-resource width-100"><img class="lozad" src="'+loadUrl+'" data-src="$2"></div>')
+          var memosImg = imgStr.replace(IMG_REG, '<div class="memo-resource width-100"><img loading="lazy" src="$2"></div>')
           memosRes += '<div class="resource-wrapper"><div class="images-wrapper my-2">' + memosImg + '</div></div>'
       }
       var tagArr = data[i].content.match(TAG_REG);
@@ -339,9 +338,6 @@ function getEditIcon() {
     window.Lately && Lately.init({
       target: '.item-mate'
     });
-    //延迟加载
-    var observer = lozad('.lozad');
-    observer.observe();
   }
 }
 
