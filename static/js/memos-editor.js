@@ -2,7 +2,7 @@ var editIcon = '<button class="load-memos-editor p-1"><i class="iconfont iconedi
 document.body.insertAdjacentHTML('beforeend', editIcon);
 
 var memosDom = document.querySelector(memosData.dom);
-var memosEditorCont = '<div class="memos-editor animate__animated animate__fadeIn d-none col-12"><div class="memos-editor-body mb-3 p-3"><div class="memos-editor-inner animate__animated animate__fadeIn"><div class="memos-editor-content"><textarea class="memos-editor-inputer text-sm" rows="1" placeholder="任何想法..."></textarea></div><div class="memos-editor-tools pt-3"><div class="d-flex"><div class="button outline action-btn tag-btn mr-2"><i class="iconfont iconnumber"></i></div><div class="button outline action-btn todo-btn mr-2"><i class="iconfont iconunorderedlist"></i></div><div class="button outline action-btn code-btn mr-2"><i class="iconfont iconcode"></i></div><div class="button outline action-btn mr-2 link-btn"><i class="iconfont iconlink"></i></div><div class="button outline action-btn image-btn mr-2" onclick="this.lastElementChild.click()"><i class="iconfont iconimage"></i><input class="memos-upload-image-input d-none" type="file" accept="image/*"></div><div class="button outline action-btn random-btn"><i class="iconfont iconretweet"></i></div></div><div class="d-flex flex-fill"><div class="memos-tag-list d-none mt-2 animate__animated animate__fadeIn"></div></div></div><div class="memos-editor-footer border-t pt-3 mt-3"><div class="editor-selector select mr-2"><select class="select-memos-value outline pl-2 pr-4 py-1"><option value="PUBLIC">所有人可见</option><option value="PROTECTED">仅登录可见</option><option value="PRIVATE">仅自己可见</option></select></div><div class="editor-submit d-flex flex-fill justify-content-end"><button class="primary submit-memos-btn px-3 py-1">记下</button></div></div></div><div class="memos-editor-option animate__animated animate__fadeIn"><input name="memos-api-url" class="memos-open-api-input input-text flex-fill mr-3 px-2 py-1" type="text" value="" maxlength="120" placeholder="OpenAPI"><div class="memos-open-api-submit"><button class="primary submit-openapi-btn px-3 py-1">保存</button></div></div></div><div class="memos-random d-none"></div></div>';
+var memosEditorCont = '<div class="memos-editor animate__animated animate__fadeIn d-none col-12"><div class="memos-editor-body mb-3 p-3"><div class="memos-editor-inner animate__animated animate__fadeIn"><div class="memos-editor-content"><textarea class="memos-editor-inputer text-sm" rows="1" placeholder="任何想法..."></textarea></div><div class="memos-editor-tools pt-3"><div class="d-flex"><div class="button outline action-btn tag-btn mr-2"><i class="iconfont iconnumber"></i></div><div class="button outline action-btn todo-btn mr-2"><i class="iconfont iconunorderedlist"></i></div><div class="button outline action-btn code-btn mr-2"><i class="iconfont iconcode"></i></div><div class="button outline action-btn mr-2 link-btn"><i class="iconfont iconlink"></i></div><div class="button outline action-btn image-btn mr-2" onclick="this.lastElementChild.click()"><i class="iconfont iconimage"></i><input class="memos-upload-image-input d-none" type="file" accept="image/*"></div><div class="button outline action-btn random-btn"><i class="iconfont iconretweet"></i></div></div><div class="d-flex flex-fill"><div class="memos-tag-list d-none mt-2 animate__animated animate__fadeIn"></div></div></div><div class="memos-editor-footer border-t pt-3 mt-3"><div class="editor-selector select mr-2"><select class="select-memos-value outline pl-2 pr-4 py-2"><option value="PUBLIC">所有人可见</option><option value="PROTECTED">仅登录可见</option><option value="PRIVATE">仅自己可见</option></select></div><div class="button outline p-2 switchUser-btn"><i class="iconfont iconswitchuser"></i></div><div class="editor-submit d-flex flex-fill justify-content-end"><button class="primary submit-memos-btn px-3 py-2">记下</button></div></div></div><div class="memos-editor-option animate__animated animate__fadeIn"><input name="memos-api-url" class="memos-open-api-input input-text flex-fill mr-3 p-2" type="password" value="" maxlength="120" placeholder="OpenAPI"><button class="primary submit-openapi-btn px-3 py-2">保存</button></div></div><div class="memos-random d-none"></div></div>';
 memosDom.insertAdjacentHTML('afterbegin',memosEditorCont);
 
 var memosEditorInner = document.querySelector(".memos-editor-inner"); 
@@ -15,6 +15,7 @@ var todoBtn = document.querySelector(".todo-btn");
 var codeBtn = document.querySelector(".code-btn");
 var linkBtn = document.querySelector(".link-btn");
 var randomBtn = document.querySelector(".random-btn");
+var switchUserBtn = document.querySelector(".switchUser-btn");
 var loadEditorBtn = document.querySelector(".load-memos-editor");
 var submitApiBtn = document.querySelector(".submit-openapi-btn");
 var submitMemoBtn = document.querySelector(".submit-memos-btn");
@@ -118,7 +119,7 @@ function getEditIcon() {
         uploadImage(filesData);
       }
     }
-  })
+  });
 
   async function uploadImage(data) {
     const imageData = new FormData();
@@ -138,10 +139,25 @@ function getEditIcon() {
         })
       }
     })
-  }
+  };
+
+  switchUserBtn.addEventListener("click", function () {
+    memosPath = window.localStorage && window.localStorage.getItem("memos-access-path");
+    memosOpenId = window.localStorage && window.localStorage.getItem("memos-access-token");
+    if (memosPath && memosOpenId) {
+      memosEditorOption.classList.remove("d-none");
+      memosEditorInner.classList.add("d-none");
+      memosRadomCont.innerHTML = '';
+      openApiInput.value = '';
+    }
+  });
 
   submitApiBtn.addEventListener("click", function () {
-    getMemosData(openApiInput.value)
+    if(openApiInput.value == null || openApiInput.value == ''){
+      cocoMessage.info('内容不能为空');
+    }else{
+      getMemosData(openApiInput.value);
+    }
   });
 
   submitMemoBtn.addEventListener("click", function () {
@@ -196,7 +212,7 @@ function getEditIcon() {
         response.map((t)=>{
           taglist += '<div class="memos-tag d-flex text-xs mt-2 mr-2"><a class="d-flex px-2 justify-content-center" onclick="setMemoTag(this)">#'+t+'</a></div>'
         })
-        document.querySelector(".memos-tag-list").insertAdjacentHTML('beforeend', taglist);
+        document.querySelector(".memos-tag-list").innerHTML = taglist;
         memosRadomCont.classList.remove("d-none");
       }).catch(err => cocoMessage.error('Memos Open API 有误，请重新输入!'));
     }
@@ -216,25 +232,26 @@ function getEditIcon() {
         cocoMessage.error('出错了，再检查一下吧!')
       }
     }).then(resdata => {
-      let apiRes = e.match(apiReg),urlRes = e.match(urlReg)[1];
-      memosOpenId = apiRes[1];
-      memosPath = urlRes;
-      memosCount = resdata.data.length;
-      window.localStorage && window.localStorage.setItem("memos-access-path", urlRes);
-      window.localStorage && window.localStorage.setItem("memos-access-token", memosOpenId);
-      window.localStorage && window.localStorage.setItem("memos-response-count", memosCount);
-      cocoMessage.success(
-      '保存成功',
-      ()=>{
-        memosEditorOption.classList.add("d-none");
-        memosEditorInner.classList.remove("d-none"); 
-        memosPath = window.localStorage && window.localStorage.getItem("memos-access-path");
-        memosOpenId = window.localStorage && window.localStorage.getItem("memos-access-token");
-        hasMemosOpenId();
-      })
+      if(typeof(resdata) !== "undefined"){
+        let apiRes = e.match(apiReg),urlRes = e.match(urlReg)[1];
+        memosOpenId = apiRes[1];
+        memosPath = urlRes;
+        memosCount = resdata.data.length;
+        window.localStorage && window.localStorage.setItem("memos-access-path", urlRes);
+        window.localStorage && window.localStorage.setItem("memos-access-token", memosOpenId);
+        window.localStorage && window.localStorage.setItem("memos-response-count", memosCount);
+        cocoMessage.success(
+        '保存成功',
+        ()=>{
+          memosEditorOption.classList.add("d-none");
+          memosEditorInner.classList.remove("d-none"); 
+          memosPath = window.localStorage && window.localStorage.getItem("memos-access-path");
+          memosOpenId = window.localStorage && window.localStorage.getItem("memos-access-token");
+          hasMemosOpenId();
+        })
+      }
     })
-    .catch(err => {cocoMessage.error('网络错误')});
-  }
+  };
 
   function updateAvatarUrl(e) {
     let avatarUrl = memosPath+"/api/user/me?openId="+memosOpenId;
@@ -327,7 +344,7 @@ function getEditIcon() {
         }
       }
       result += '<div class="d-flex animate__animated animate__fadeIn mb-3"><div class="card-item flex-fill p-3"><div class="item-header d-flex mb-3"><div class="item-avatar mr-3" style="background-image:url('+ avatar +')"></div><div class="item-sub d-flex flex-column"><div class="item-creator"><a href='+ memosPath +' target="_blank">' + creatorName + '</a></div><div class="item-mate mt-2 text-xs">' + new Date(createdTs * 1000).toLocaleString() + '</div></div></div><div class="item-content"><div class="item-inner">' + memosRes + '</div><div class="item-footer d-flex mt-2"><div class="item-tag d-flex align-items-center text-xs px-2">'+ memosTag +'</div>';
-      result += '<div class="d-flex flex-fill justify-content-end"><div class="item d-flex align-items-center"><a href="'+memosLink+'" target="_blank" title="查看"><i class="iconfont iconlink-ex"></i></a></div></div></div>';
+      result += '<div class="d-flex flex-fill justify-content-end"><div class="item d-flex align-items-center"><a href="'+memosLink+'" target="_blank"><i class="iconfont iconlink-ex"></i></a></div></div></div>';
       result += '</div></div></div>';
     };
     memosRadomCont.innerHTML = result;

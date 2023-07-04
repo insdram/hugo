@@ -7,6 +7,7 @@
 </head>
 <link rel="stylesheet" href="/static/css/style.css">
 <link rel="stylesheet" href="/static/css/grid.css">
+<link rel="stylesheet" href="/static/css/aplay.css">
 <link rel="stylesheet" href="/static/css/iconfont.css">
 <link rel="stylesheet" href="/static/css/animate.min.css">
 
@@ -34,16 +35,13 @@
   .dark .load-memos-editor{background-color: var(--dark-background-secondary);}
   .memos-editor-body{display:flex;border-radius:.33rem;background-color:var(--light-background-secondary);flex-direction:column}
   .dark .memos-editor-body {background-color: var(--dark-background-secondary);}
-  .memos-editor-content{display: flex;}
+  .memos-editor-content,.memos-editor-footer,.memos-editor-option{display: flex;}
   .memos-editor-content .memos-editor-inputer{overflow-x:hidden;overflow-y:clip;padding:0;width:100%;max-height:160px;outline:2px solid transparent;outline-offset:2px;background-color:transparent;white-space:pre-wrap;line-height:2rem;resize:none;overflow-wrap:anywhere;word-break:normal}
   .memos-editor-tools{display: flex;flex-direction: column;}
-  .memos-editor-tools .action-btn {padding: .25rem;line-height:1;}
+  .memos-editor-tools .action-btn {padding: .25rem;}
   .memos-editor-tools .memos-tag-list {display:flex;flex-wrap:wrap;align-items:center;line-height:2;}
-  .memos-editor-tools .memos-tag {position:relative;white-space: nowrap;border-radius: .33rem;background-color: var(--light-color-hover);}
-  .dark .memos-editor-tools .memos-tag {background-color: var(--dark-color-hover);}
+  .memos-editor-tools .memos-tag {position:relative;}
   .memos-editor-tools .memos-tag a {flex:1}
-  .memos-editor-footer {display: flex;line-height:1;align-items:center;}
-  .memos-editor-option {display: flex;align-items:center;}
   /* Memos Content */
   .card-item{position:relative;overflow:hidden;border-radius:.33rem;background:var(--light-background-secondary);cursor:default;transition:all .6s ease-out;}
   .card-item:hover{background:var(--light-background-hover);}
