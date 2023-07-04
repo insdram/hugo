@@ -2,7 +2,7 @@ var editIcon = '<button class="load-memos-editor p-1"><i class="iconfont iconedi
 document.body.insertAdjacentHTML('beforeend', editIcon);
 
 var memosDom = document.querySelector(memosData.dom);
-var memosEditorCont = '<div class="memos-editor animate__animated animate__fadeIn d-none col-12"><div class="memos-editor-body mb-3 p-3"><div class="memos-editor-inner animate__animated animate__fadeIn"><div class="memos-editor-content"><textarea class="memos-editor-inputer text-sm" rows="1" placeholder="任何想法..."></textarea></div><div class="memos-editor-tools pt-3"><div class="d-flex"><div class="button outline action-btn tag-btn mr-2"><i class="iconfont iconnumber"></i></div><div class="button outline action-btn todo-btn mr-2"><i class="iconfont iconunorderedlist"></i></div><div class="button outline action-btn code-btn mr-2"><i class="iconfont iconcode"></i></div><div class="button outline action-btn mr-2 link-btn"><i class="iconfont iconlink"></i></div><div class="button outline action-btn image-btn mr-2" onclick="this.lastElementChild.click()"><i class="iconfont iconimage"></i><input class="memos-upload-image-input d-none" type="file" accept="image/*"></div><div class="button outline action-btn random-btn"><i class="iconfont iconretweet"></i></div></div><div class="d-flex flex-fill"><div class="memos-tag-list d-none mt-2 animate__animated animate__fadeIn"></div></div></div><div class="memos-editor-footer border-t pt-3 mt-3"><div class="editor-selector select mr-2"><select class="select-memos-value outline pl-2 pr-4 py-2"><option value="PUBLIC">所有人可见</option><option value="PROTECTED">仅登录可见</option><option value="PRIVATE">仅自己可见</option></select></div><div class="button outline p-2 switchUser-btn"><i class="iconfont iconswitchuser"></i></div><div class="editor-submit d-flex flex-fill justify-content-end"><button class="primary submit-memos-btn px-3 py-2">记下</button></div></div></div><div class="memos-editor-option animate__animated animate__fadeIn"><input name="memos-api-url" class="memos-open-api-input input-text flex-fill mr-3 p-2" type="password" value="" maxlength="120" placeholder="OpenAPI"><button class="primary submit-openapi-btn px-3 py-2">保存</button></div></div><div class="memos-random d-none"></div></div>';
+var memosEditorCont = '<div class="memos-editor animate__animated animate__fadeIn d-none col-12"><div class="memos-editor-body mb-3 p-3"><div class="memos-editor-inner animate__animated animate__fadeIn d-none"><div class="memos-editor-content"><textarea class="memos-editor-inputer text-sm" rows="1" placeholder="任何想法..."></textarea></div><div class="memos-editor-tools pt-3"><div class="d-flex"><div class="button outline action-btn tag-btn mr-2"><i class="iconfont iconnumber"></i></div><div class="button outline action-btn todo-btn mr-2"><i class="iconfont iconunorderedlist"></i></div><div class="button outline action-btn code-btn mr-2"><i class="iconfont iconcode"></i></div><div class="button outline action-btn mr-2 link-btn"><i class="iconfont iconlink"></i></div><div class="button outline action-btn image-btn mr-2" onclick="this.lastElementChild.click()"><i class="iconfont iconimage"></i><input class="memos-upload-image-input d-none" type="file" accept="image/*"></div><div class="button outline action-btn random-btn"><i class="iconfont iconretweet"></i></div></div><div class="d-flex flex-fill"><div class="memos-tag-list d-none mt-2 animate__animated animate__fadeIn"></div></div></div><div class="memos-editor-footer border-t pt-3 mt-3"><div class="editor-selector select mr-2"><select class="select-memos-value outline pl-2 pr-4 py-2"><option value="PUBLIC">所有人可见</option><option value="PROTECTED">仅登录可见</option><option value="PRIVATE">仅自己可见</option></select></div><div class="button outline p-2 switchUser-btn"><i class="iconfont iconswitchuser"></i></div><div class="editor-submit d-flex flex-fill justify-content-end"><button class="primary submit-memos-btn px-3 py-2">记下</button></div></div></div><div class="memos-editor-option animate__animated animate__fadeIn d-none"><input name="memos-api-url" class="memos-open-api-input input-text flex-fill mr-3 p-2" type="password" value="" maxlength="120" placeholder="OpenAPI"><button class="primary submit-openapi-btn px-3 py-2">保存</button></div></div><div class="memos-random d-none"></div></div>';
 memosDom.insertAdjacentHTML('afterbegin',memosEditorCont);
 
 var memosEditorInner = document.querySelector(".memos-editor-inner"); 
@@ -199,13 +199,11 @@ function getEditIcon() {
 
   function hasMemosOpenId() {
     if (!memosOpenId) {
-      memosEditorInner.classList.add("d-none"); 
+      memosEditorOption.classList.remove("d-none"); 
       cocoMessage.info('请设置 Memos Open API');
     }else{
-      memosEditorOption.classList.add("d-none"); 
-      cocoMessage.success('准备就绪');
-      let tagUrl = memosPath+"/api/tag?openId="+memosOpenId;
-      let response = fetch(tagUrl).then(response => response.json()).then(resdata => {
+      const tagUrl = memosPath+"/api/tag?openId="+memosOpenId;
+      const response = fetch(tagUrl).then(response => response.json()).then(resdata => {
         return resdata.data
       }).then(response => {
         let taglist = "";
@@ -213,8 +211,14 @@ function getEditIcon() {
           taglist += '<div class="memos-tag d-flex text-xs mt-2 mr-2"><a class="d-flex px-2 justify-content-center" onclick="setMemoTag(this)">#'+t+'</a></div>'
         })
         document.querySelector(".memos-tag-list").innerHTML = taglist;
+        cocoMessage.success('准备就绪');
+        memosEditorInner.classList.remove("d-none");
+        memosEditorOption.classList.add("d-none"); 
         memosRadomCont.classList.remove("d-none");
-      }).catch(err => cocoMessage.error('Memos Open API 有误，请重新输入!'));
+      }).catch(err => {
+        memosEditorOption.classList.remove("d-none");
+        cocoMessage.error('Memos Open API 有误，请重新输入!');
+      });
     }
   }
 
