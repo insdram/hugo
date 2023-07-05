@@ -133,13 +133,17 @@ select.outline {
 
 .button.outline:hover,
 a.button.outline:hover,
-button.outline:hover {
+button.outline:hover,
+.select.outline:hover,
+select.outline:hover {
 	background-color: var(--light-background-hover);
 }
 
 .dark .button.outline:hover,
 .dark a.button.outline:hover,
 .dark button.outline:hover,
+.dark select.outline:hover,
+.dark .select.outline:hover,
 .dark select.outline:hover {
 	background-color: var(--dark-background-hover);
 	color: inherit;
@@ -170,7 +174,6 @@ button.link {
 	position: relative;
 	display: flex;
 	text-align: center;
-	text-align-last: center;
 }
 
 .select::after {
