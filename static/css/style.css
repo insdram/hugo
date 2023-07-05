@@ -85,24 +85,24 @@ a {
 	margin-left: auto;
 }
 
-.button,a.button,button,select {
+.button,a.button,button,.select,select {
 	position: relative;
 	display: flex;
 	outline: none;
 	border: 1px solid transparent;
 	border-radius: .33rem;
-	background: var(--light-background-secondary);
+	background-color: transparent;
 	text-align: center;
 	text-decoration: none;
 	font-weight: 500;
 	line-height: 1;
 	cursor: pointer;
+	transition: all .3s linear;
 	align-items: center;
 	justify-content: center;
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
-	transition: all .3s linear;
 }
 
 .dark .button,
@@ -115,6 +115,7 @@ a {
 .button.outline,
 a.button.outline,
 button.outline,
+.select.outline,
 select.outline {
 	border-color: var(--light-border-color);
 	background: transparent;
@@ -124,6 +125,7 @@ select.outline {
 .dark .button.outline,
 .dark a.button.outline,
 .dark button.outline,
+.dark .select.outline,
 .dark select.outline {
 	border-color: var(--dark-border-color);
 	color: inherit;
@@ -164,24 +166,6 @@ button.link {
 	font-size: 1rem;
 }
 
-textarea {
-	font-family: "PingFangSC-Regular", "PingFang SC", "Microsoft YaHei", Arial, Helvetica, "WenQuanYi Micro Hei", "tohoma,sans-serif";
-}
-
-input {
-	outline: none;
-	border:none;
-	border-radius: .33rem;
-	background-color: transparent;
-	box-shadow: none;
-	color: inherit;
-}
-
-input:focus,input:active {
-	outline: none;
-	background-color: transparent;
-}
-
 .select,select {
 	position: relative;
 	display: flex;
@@ -211,6 +195,36 @@ select>option {
 
 .dark select>option {
 	background-color: var(--dark-background-secondary);
+}
+
+input {
+	outline: none;
+	border:none;
+	border-radius: .33rem;
+	background-color: transparent;
+	box-shadow: none;
+	color: inherit;
+}
+
+input:focus,input:active {
+	outline: none;
+	background-color: transparent;
+}
+
+textarea {
+	font-family: inherit;
+	overflow-x: hidden;
+	overflow-y: clip;
+	flex: 1;
+	padding: 0;
+	outline: .1rem solid transparent;
+	outline-offset: .1rem;
+	background-color: transparent;
+	white-space: pre-wrap;
+	line-height: 2;
+	resize: none;
+	overflow-wrap: anywhere;
+	word-break: normal
 }
 
 button, input, optgroup, select, textarea {
