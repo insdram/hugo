@@ -252,6 +252,30 @@ pre code {
 	color: inherit;
 }
 
+code {
+	margin: 0 4px;
+	padding: 3px 8px 2px;
+	border: 1px solid #b8e0f3;
+	border-radius: .33rem;
+	background-color: #e6f7ff;
+	vertical-align: middle;
+	font-size: .75rem;
+}
+
+.dark code {
+	border: 1px solid var(--dark-border-color);
+	background-color: var(--dark-background-secondary);
+}
+
+pre {
+	overflow: auto;
+	margin: 0.5rem 0;
+	padding: 1rem 1.5rem;
+	border-radius: .33rem;
+	background-color: var(--light-color-hover);
+	font-size: .75rem;
+}
+
 blockquote {
 	margin: 1rem 0;
 	padding: .5rem 1rem;

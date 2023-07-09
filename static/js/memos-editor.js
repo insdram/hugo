@@ -64,9 +64,13 @@ function getEditIcon() {
     memosPath = window.localStorage && window.localStorage.getItem("memos-access-path");
     memosOpenId = window.localStorage && window.localStorage.getItem("memos-access-token");
     if (memosPath && memosOpenId) {
-      let memoTodo = '- [ ] \n';
-      memosTextarea.value += memoTodo;
-      memosTextarea.style.height = memosTextarea.scrollHeight + 'px';
+      let memoTodo = '- [] \n';
+      insertValue(memoTodo);
+      let bracketIndex = memosTextarea.value.indexOf("[]");
+      if (bracketIndex !== -1) {
+        memosTextarea.selectionStart = bracketIndex + 1;
+        memosTextarea.selectionEnd = bracketIndex + 1;
+      }
     }
   });
 
@@ -75,9 +79,12 @@ function getEditIcon() {
     memosOpenId = window.localStorage && window.localStorage.getItem("memos-access-token");
     if (memosPath && memosOpenId) {
       let memoCode = '```\n\n```';
-      let textareaH = memosTextarea.clientHeight;
-      memosTextarea.value += memoCode;
-      memosTextarea.style.height = memosTextarea.scrollHeight + 'px';
+      insertValue(memoCode);
+      let bracketIndex = memosTextarea.value.indexOf("\n\n");
+      if (bracketIndex !== -1) {
+        memosTextarea.selectionStart = bracketIndex + 1;
+        memosTextarea.selectionEnd = bracketIndex + 1;
+      }
     }
   });
 
@@ -86,9 +93,24 @@ function getEditIcon() {
     memosOpenId = window.localStorage && window.localStorage.getItem("memos-access-token");
     if (memosPath && memosOpenId) {
       let memoLink = '[]()';
-    memosTextarea.value += memoLink;
+      insertValue(memoLink);
+      let bracketIndex = memosTextarea.value.indexOf("()");
+      if (bracketIndex !== -1) {
+        memosTextarea.selectionStart = bracketIndex + 1;
+        memosTextarea.selectionEnd = bracketIndex + 1;
+      }
     }
   });
+
+  function insertValue(t) {
+    var textLength = t.length;
+    memosTextarea.value += t;
+    memosTextarea.style.height = memosTextarea.scrollHeight + 'px';
+    // 更新光标位置
+    memosTextarea.selectionStart = textLength;
+    memosTextarea.selectionEnd = textLength;
+    memosTextarea.focus()
+  }
 
   randomBtn.addEventListener("click", function () {
     memosPath = window.localStorage && window.localStorage.getItem("memos-access-path");
@@ -313,9 +335,11 @@ function getEditIcon() {
       var tagArr = data[i].content.match(TAG_REG);
       var memosTag = '';
       if (tagArr) {
-        memosTag = String(tagArr[0]).replace(/[#]/g, '')
+        memosTag = tagArr.map(t=>{
+          return '<div class="item-tag d-flex align-items-center text-xs mr-2 px-2">'+ String(t).replace(/[#]/g, '') +'</div>';
+        }).join('');
       }else{
-        memosTag = '动态'
+        memosTag = '<div class="item-tag d-flex align-items-center text-xs mr-2 px-2">动态</div>';
       }
       
       //解析内置资源文件
@@ -347,7 +371,7 @@ function getEditIcon() {
           memosRes += '<p class="datasource">' + resUrl + '</p>'
         }
       }
-      result += '<div class="d-flex animate__animated animate__fadeIn mb-3"><div class="card-item flex-fill p-3"><div class="item-header d-flex mb-3"><div class="item-avatar mr-3" style="background-image:url('+ avatar +')"></div><div class="item-sub d-flex flex-column"><div class="item-creator"><a href='+ memosPath +' target="_blank">' + creatorName + '</a></div><div class="item-mate mt-2 text-xs">' + new Date(createdTs * 1000).toLocaleString() + '</div></div></div><div class="item-content"><div class="item-inner">' + memosRes + '</div><div class="item-footer d-flex mt-2"><div class="item-tag d-flex align-items-center text-xs px-2">'+ memosTag +'</div>';
+      result += '<div class="d-flex animate__animated animate__fadeIn mb-3"><div class="card-item flex-fill p-3"><div class="item-header d-flex mb-3"><div class="item-avatar mr-3" style="background-image:url('+ avatar +')"></div><div class="item-sub d-flex flex-column"><div class="item-creator"><a href='+ memosPath +' target="_blank">' + creatorName + '</a></div><div class="item-mate mt-2 text-xs">' + new Date(createdTs * 1000).toLocaleString() + '</div></div></div><div class="item-content"><div class="item-inner">' + memosRes + '</div><div class="item-footer d-flex mt-2"><div class="d-flex">'+ memosTag +'</div>';
       result += '<div class="d-flex flex-fill justify-content-end"><div class="item d-flex align-items-center"><a href="'+memosLink+'" target="_blank"><i class="iconfont iconlink-ex"></i></a></div></div></div>';
       result += '</div></div></div>';
     };
