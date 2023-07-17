@@ -118,7 +118,7 @@ function getEditIcon() {
     memosCount = window.localStorage && window.localStorage.getItem("memos-response-count");
     if (memosPath && memosOpenId) {
       let randomNum = random(0,memosCount);
-      let randomUrl= memosPath+"/api/memo/all?&limit=1&offset="+randomNum;
+      let randomUrl= memosPath+"/api/v1/memo/all?&limit=1&offset="+randomNum;
       fetch(randomUrl).then(res => {
         if (res.status == 200) {
           return res.json()
@@ -126,7 +126,7 @@ function getEditIcon() {
           cocoMessage.error('出错了，再检查一下吧!')
         }
       }).then(resdata => {
-        updateAvatarUrl(resdata.data);
+        updateAvatarUrl(resdata);
       })
       .catch(err => {cocoMessage.error('网络错误')});
     }
@@ -145,7 +145,7 @@ function getEditIcon() {
 
   async function uploadImage(data) {
     const imageData = new FormData();
-    const blobUrl = memosPath+"/api/resource/blob?openId="+memosOpenId;
+    const blobUrl = memosPath+"/api/v1/resource/blob?openId="+memosOpenId;
     imageData.append('file', data, data.name)
     const resp = await fetch(blobUrl, {
       method: "POST",
@@ -189,7 +189,7 @@ function getEditIcon() {
     memosOpenId = window.localStorage && window.localStorage.getItem("memos-access-token");
     let  hasContent = memosContent.length !== 0;
     if (memosOpenId && hasContent) {
-      let memoUrl = memosPath+"/api/memo?openId="+memosOpenId;
+      let memoUrl = memosPath+"/api/v1/memo?openId="+memosOpenId;
       let memoBody = {content:memosContent,visibility:memosVisibility,resourceList:memosResource}
       fetch(memoUrl, {
         method: 'post',
@@ -224,9 +224,9 @@ function getEditIcon() {
       memosEditorOption.classList.remove("d-none"); 
       cocoMessage.info('请设置 Memos Open API');
     }else{
-      const tagUrl = memosPath+"/api/tag?openId="+memosOpenId;
+      const tagUrl = memosPath+"/api/v1/tag?openId="+memosOpenId;
       const response = fetch(tagUrl).then(response => response.json()).then(resdata => {
-        return resdata.data
+        return resdata;
       }).then(response => {
         let taglist = "";
         response.map((t)=>{
@@ -262,7 +262,7 @@ function getEditIcon() {
         let apiRes = e.match(apiReg),urlRes = e.match(urlReg)[1];
         memosOpenId = apiRes[1];
         memosPath = urlRes;
-        memosCount = resdata.data.length;
+        memosCount = resdata.length;
         window.localStorage && window.localStorage.setItem("memos-access-path", urlRes);
         window.localStorage && window.localStorage.setItem("memos-access-token", memosOpenId);
         window.localStorage && window.localStorage.setItem("memos-response-count", memosCount);
@@ -280,7 +280,7 @@ function getEditIcon() {
   };
 
   function updateAvatarUrl(e) {
-    let avatarUrl = memosPath+"/api/user/me?openId="+memosOpenId;
+    let avatarUrl = memosPath+"/api/v1/user/me?openId="+memosOpenId;
     fetch(avatarUrl).then(res => {
       if (res.status == 200) {
         return res.json()
@@ -288,7 +288,7 @@ function getEditIcon() {
         cocoMessage.error('出错了，再检查一下吧!')
       }
     }).then(resdata => {
-      let d = resdata.data;
+      let d = resdata;
       e.map(item => {
         return item.avatarUrl = d.avatarUrl
       });
