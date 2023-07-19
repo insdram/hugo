@@ -2,7 +2,7 @@ var editIcon = '<button class="load-memos-editor p-1"><i class="iconfont iconedi
 document.body.insertAdjacentHTML('beforeend', editIcon);
 
 var memosDom = document.querySelector(memosData.dom);
-var memosEditorCont = '<div class="memos-editor animate__animated animate__fadeIn d-none col-12"><div class="memos-editor-body mb-3 p-3"><div class="memos-editor-inner animate__animated animate__fadeIn d-none"><div class="memos-editor-content"><textarea class="memos-editor-textarea text-sm" rows="1" placeholder="任何想法..."></textarea></div><div class="memos-editor-tools pt-3"><div class="d-flex"><div class="button outline action-btn tag-btn mr-2"><i class="iconfont iconnumber"></i></div><div class="button outline action-btn todo-btn mr-2"><i class="iconfont iconunorderedlist"></i></div><div class="button outline action-btn code-btn mr-2"><i class="iconfont iconcode"></i></div><div class="button outline action-btn mr-2 link-btn"><i class="iconfont iconlink"></i></div><div class="button outline action-btn image-btn mr-2" onclick="this.lastElementChild.click()"><i class="iconfont iconimage"></i><input class="memos-upload-image-input d-none" type="file" accept="image/*"></div></div><div class="d-flex flex-fill"><div class="memos-tag-list d-none mt-2 animate__animated animate__fadeIn"></div></div></div><div class="memos-editor-footer border-t mt-3 pt-3 "><div class="d-flex"><div class="editor-selector select outline"><select class="select-memos-value pl-2 pr-4 py-2"><option value="PUBLIC">所有人可见</option><option value="PROTECTED">仅登录可见</option><option value="PRIVATE">仅自己可见</option></select></div><div class="button outline random-btn mx-2 p-2"><i class="iconfont iconretweet"></i></div><div class="button outline switchUser-btn p-2"><i class="iconfont iconswitchuser"></i></div></div><div class="editor-submit d-flex flex-fill justify-content-end"><button class="primary edit-memos-btn px-3 py-2 d-none" title="保存">保存</button><button class="primary submit-memos-btn px-3 py-2" title="记下">记下</button></div></div></div><div class="memos-editor-option animate__animated animate__fadeIn d-none"><input name="memos-api-url" class="memos-open-api-input input-text flex-fill mr-3 p-2" type="password" value="" maxlength="120" placeholder="OpenAPI"><button class="primary submit-openapi-btn px-3 py-2">保存</button></div></div><div class="memos-random d-none"></div></div>';
+var memosEditorCont = '<div class="memos-editor animate__animated animate__fadeIn d-none col-12"><div class="memos-editor-body mb-3 p-3"><div class="memos-editor-inner animate__animated animate__fadeIn d-none"><div class="memos-editor-content"><textarea class="memos-editor-textarea text-sm" rows="1" placeholder="任何想法..."></textarea></div><div class="memos-image-list d-flex flex-fill line-xl"></div><div class="memos-editor-tools pt-3"><div class="d-flex"><div class="button outline action-btn tag-btn mr-2"><i class="iconfont iconnumber"></i></div><div class="button outline action-btn todo-btn mr-2"><i class="iconfont iconunorderedlist"></i></div><div class="button outline action-btn code-btn mr-2"><i class="iconfont iconcode"></i></div><div class="button outline action-btn mr-2 link-btn"><i class="iconfont iconlink"></i></div><div class="button outline action-btn image-btn mr-2" onclick="this.lastElementChild.click()"><i class="iconfont iconimage"></i><input class="memos-upload-image-input d-none" type="file" accept="image/*"></div></div><div class="d-flex flex-fill"><div class="memos-tag-list d-none mt-2 animate__animated animate__fadeIn"></div></div></div><div class="memos-editor-footer border-t mt-3 pt-3 "><div class="d-flex"><div class="editor-selector select outline"><select class="select-memos-value pl-2 pr-4 py-2"><option value="PUBLIC">所有人可见</option><option value="PROTECTED">仅登录可见</option><option value="PRIVATE">仅自己可见</option></select></div><div class="button outline random-btn mx-2 p-2"><i class="iconfont iconretweet"></i></div><div class="button outline switchUser-btn d-none d-md-flex mr-2 p-2"><i class="iconfont iconswitchuser"></i></div></div><div class="editor-submit d-flex flex-fill justify-content-end"><div class="edit-memos d-none"><button class="outline cancel-edit-btn mr-2 px-3 py-2" title="取消">取消</button><button class="primary edit-memos-btn px-3 py-2" title="保存">保存</button></div><button class="primary submit-memos-btn px-3 py-2" title="记下">记下</button></div></div></div><div class="memos-editor-option animate__animated animate__fadeIn d-none"><input name="memos-api-url" class="memos-open-api-input input-text flex-fill mr-3 p-2" type="password" value="" maxlength="120" placeholder="OpenAPI"><button class="primary submit-openapi-btn px-3 py-2">保存</button></div></div><div class="memos-random d-none"></div></div>';
 memosDom.insertAdjacentHTML('afterbegin',memosEditorCont);
 
 var memosEditorInner = document.querySelector(".memos-editor-inner"); 
@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function getEditIcon() {
-  var memosContent = '',memosVisibility = '',memosResource = [];
+  var memosContent = '',memosVisibility = '',memosResource = [],memosRelation=[];
   var memosCount = window.localStorage && window.localStorage.getItem("memos-response-count");
   var memosPath = window.localStorage && window.localStorage.getItem("memos-access-path");
   var memosOpenId = window.localStorage && window.localStorage.getItem("memos-access-token");
@@ -152,11 +152,14 @@ function getEditIcon() {
       body: imageData
     })
     const res = await resp.json().then(res => {
-      if(res.data.id){
+      if(res.id){
+        let imageList = "";
+        imageList += '<div data-id="'+res.id+'" class="memos-tag d-flex text-xs mt-2 mr-2" onclick="deleteImage(this)"><div class="d-flex px-2 justify-content-center">'+res.filename+'</div></div>'
+        document.querySelector(".memos-image-list").insertAdjacentHTML('afterbegin', imageList);
         cocoMessage.success(
         '上传成功',
         ()=>{
-          memosResource.push(res.data.id);
+          memosResource.push(res.id);
           window.localStorage && window.localStorage.setItem("memos-resource-list",  JSON.stringify(memosResource));
         })
       }
@@ -187,25 +190,43 @@ function getEditIcon() {
     memosVisibility = memosVisibilitySelect.value;
     memosResource = window.localStorage && JSON.parse(window.localStorage.getItem("memos-resource-list"));
     memosOpenId = window.localStorage && window.localStorage.getItem("memos-access-token");
+    let TAG_REG = /(?<=#)([^ ]*)(?= )/g;
+    let memosTag = memosContent.match(TAG_REG);
     let  hasContent = memosContent.length !== 0;
     if (memosOpenId && hasContent) {
       let memoUrl = memosPath+"/api/v1/memo?openId="+memosOpenId;
-      let memoBody = {content:memosContent,visibility:memosVisibility,resourceList:memosResource}
+      let memoBody = {content:memosContent,relationList:memosRelation,resourceIdList:memosResource,visibility:memosVisibility}
       fetch(memoUrl, {
-        method: 'post',
+        method: 'POST',
         body: JSON.stringify(memoBody),
         headers: {
           'Content-Type': 'application/json'
         }
       }).then(function(res) {
-        if (res.status == 200) {
-          cocoMessage.success(
-          '发送成功',
-          ()=>{
-            location.reload();
-          })
+        if (res.status == 200 && memosTag) {
+          const memoTagUrl = memosPath+"/api/v1/tag?openId="+memosOpenId;
+          (async () => {
+            for await (const i of memosTag) {
+              const response = await fetch(memoTagUrl, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  name: i
+                })
+              });
+            }
+            cocoMessage.success(
+              '发送成功',
+              () => {
+                location.reload();
+              })
+          })();
+
         }
-      })
+      });
+      
     }else if(!hasContent){
       cocoMessage.info('内容不能为空');
     }else{
@@ -389,4 +410,14 @@ function getEditIcon() {
 function setMemoTag(e){
   let memoTag = e.textContent + " ";
   memosTextarea.value += memoTag;
+}
+
+function deleteImage(e){
+  if(e){
+    let memoId = e.getAttribute("data-id")
+    let memosResource = window.localStorage && JSON.parse(window.localStorage.getItem("memos-resource-list"));
+    let memosResourceList = memosResource.filter(function(item){ return item != memoId});
+    window.localStorage && window.localStorage.setItem("memos-resource-list",  JSON.stringify(memosResourceList));
+    e.remove()
+  } 
 }
