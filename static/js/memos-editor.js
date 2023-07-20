@@ -35,6 +35,10 @@ function getEditIcon() {
   var memosOpenId = window.localStorage && window.localStorage.getItem("memos-access-token");
   var getEditor = window.localStorage && window.localStorage.getItem("memos-editor-display");
   var isHide = getEditor === "hide";
+
+  window.localStorage && window.localStorage.setItem("memos-resource-list",  JSON.stringify(memosResource));
+  window.localStorage && window.localStorage.setItem("memos-relation-list",  JSON.stringify(memosRelation));
+
   memosTextarea.addEventListener('input', (e) => {
     memosTextarea.style.height = 'inherit';
     memosTextarea.style.height = e.target.scrollHeight + 'px';
@@ -202,28 +206,29 @@ function getEditIcon() {
         headers: {
           'Content-Type': 'application/json'
         }
-      }).then(function(res) {
-        if (res.status == 200 && memosTag) {
-          const memoTagUrl = memosPath+"/api/v1/tag?openId="+memosOpenId;
-          (async () => {
-            for await (const i of memosTag) {
-              const response = await fetch(memoTagUrl, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                  name: i
-                })
-              });
-            }
-            cocoMessage.success(
-              '发送成功',
-              () => {
-                location.reload();
-              })
-          })();
-
+      }).then(function (res) {
+        if (res.status == 200) {
+          if (memosTag !== null) {
+            const memoTagUrl = memosPath + "/api/v1/tag?openId=" + memosOpenId;
+            (async () => {
+              for await (const i of memosTag) {
+                const response = await fetch(memoTagUrl, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    name: i
+                  })
+                });
+              }
+            })();
+          }
+          cocoMessage.success(
+            '发送成功',
+            () => {
+              location.reload();
+            })
         }
       });
       
@@ -247,7 +252,7 @@ function getEditIcon() {
     }else{
       const tagUrl = memosPath+"/api/v1/tag?openId="+memosOpenId;
       const response = fetch(tagUrl).then(response => response.json()).then(resdata => {
-        return resdata;
+        return resdata
       }).then(response => {
         let taglist = "";
         response.map((t)=>{
